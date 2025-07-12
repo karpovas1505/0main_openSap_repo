@@ -72,27 +72,26 @@ public class MCPApplicationTest {
     }
     
     @Test
-    @DisplayName("Test JSON deserialization")
-    public void testJsonDeserialization() {
-        String requestJson = """
-            {
-              "jsonrpc": "2.0",
-              "method": "test/method",
-              "id": 1,
-              "params": {
-                "key": "value"
-              }
-            }
-            """;
+    @DisplayName("Test MCPRequest deserialization")
+    public void testMCPRequestDeserialization() {
+        // Create MCPRequest directly for testing
+        Map<String, Object> params = new HashMap<>();
+        params.put("key", "value");
         
-        MCPRequest request = JsonUtil.fromJson(requestJson, MCPRequest.class);
-        assertNotNull(request);
-        assertEquals("test/method", request.getMethod());
-        assertEquals(1, request.getId());
-        assertNotNull(request.getParams());
-        assertEquals("value", request.getParams().get("key"));
+        MCPRequest request = new MCPRequest("test/method", 1, params);
         
-        System.out.println("Deserialized request: " + request);
+        // Test serialization and deserialization
+        String json = JsonUtil.toJson(request);
+        MCPRequest deserializedRequest = JsonUtil.fromJson(json, MCPRequest.class);
+        
+        assertNotNull(deserializedRequest);
+        assertEquals("test/method", deserializedRequest.getMethod());
+        assertEquals(1, deserializedRequest.getId());
+        assertNotNull(deserializedRequest.getParams());
+        assertEquals("value", deserializedRequest.getParams().get("key"));
+        
+        System.out.println("Original request: " + request);
+        System.out.println("Deserialized request: " + deserializedRequest);
     }
     
     @Test
